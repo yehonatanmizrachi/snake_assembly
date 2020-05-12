@@ -9,3 +9,4 @@ Instructions:
   3.To exit press Esc
   4.To win, gain FFh points
   5.If you lose, press space to start over or any other key to quit.
+	
