@@ -7,10 +7,11 @@ Instructions:
 
 1.If you cross the up and down boundaries, you lose!(I'm working on code that will move the snake to the opposite side of the screen) 
 
-2.Use the arrows key to take turns.
+2.Use the arrows keys to take turns.
 
 3.To exit press Esc
 
 4.To win, gain FFh points
 
 5.If you lose, press space to start over or any other key to quit.
+
