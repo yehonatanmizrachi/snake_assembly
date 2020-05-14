@@ -1,20 +1,19 @@
 .model small
 .stack 200h
 .data
-	;init
+	; init
 	backgroud_color equ 60h 
 	player_score_color equ 2Bh
 	screen_width equ 80d
 	screen_hight equ 25d
-	;fro, end to start
+	; player
 	player_score_label_offset equ (screen_hight*screen_width-1d)*2d
 	player_score db 0h
 	player_win_score equ 0FFh
-	
-	;snake
+	; snake
 	; len X 2
 	snake_len dw ?
-	snake_body dw 100 dup(?)
+	snake_body dw 0FFh + 1h dup(?)
 	; for repairing the backgroud(the snake will never start at 25d*80d*2d)
 	snake_previous_last_cell dw screen_width*screen_hight*2d
 	; 4D/4B/48/50 - r/l/u/d. defulte - right
@@ -23,6 +22,8 @@
 	food_location dw 40d*2d + 12d*screen_width*2d
 	food_color equ 4Dh
 	food_icon equ 01h
+	food_bounders equ 2d*screen_width*2d
+	; start and exit
 	EXIT db 0h
 	START_AGAIN db 0h
 	; 39h = bios code for the space key
@@ -175,23 +176,25 @@ END_CHECK_SNAKE_AET_FOOD:
 CHECK_SNAKE_AET_FOOD endp
 
 GENERATE_RANDOM_FOOD_LOCATION proc near
-
-GENERATE_RANDOM_FOOD_LOCATIPN_AGAIN:
 	push ax
 	push dx
 	push si
 	push bx
+GENERATE_RANDOM_FOOD_LOCATIPN_AGAIN:
 	; update its location
 	; cx:dx number of clock ticks since midnight
 	mov ah,0h
 	INT 1Ah
 	mov ax,dx
 	mov dx,cx
+	add dx,[snake_len]
+	add dx,[snake_len]
 	; div 16-bit dx:ax/operant -> dx = mod, ax = result
-	mov cx, screen_width*screen_hight*2h
+	mov cx, screen_width*screen_hight*2h - food_bounders
 	div cx
 	;get rid of the last bit
 	and dx,0FFFEh
+	add dx, food_bounders/2d
 	;check if the food is on the snake
 	mov si,0d
 	GENERATE_RANDOM_FOOD_LOCATION_AGAIN_LOOP:
@@ -216,14 +219,21 @@ MAIN_LOOP_FRAME_RATE proc near
 	push ax
 	push cx
 	push dx
-	
+	push bx
+	;make the game faster
+	mov bx,0h
+	mov bl,[player_score]
+	mov cl,4d
+	shr bx,cl
 	;delay cx:dx micro sec (10^-6)
-	mov al, 0
-	mov ah, 86h
-	mov cx, 0001h
-	mov dx, 0FFFFh
+	mov al,0
+	mov ah,86h
+	mov cx,0000h		
+	mov dx,0FFFFh
+	sub dx,bx
 	int 15h
 	
+	pop bx
 	pop dx
 	pop cx
 	pop dx
