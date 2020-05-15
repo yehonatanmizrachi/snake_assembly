@@ -16,8 +16,14 @@
 	snake_body dw 0FFh + 1h dup(?)
 	; for repairing the backgroud(the snake will never start at 25d*80d*2d)
 	snake_previous_last_cell dw screen_width*screen_hight*2d
+	; snake movement
 	; 4D/4B/48/50 - r/l/u/d. defulte - right
-	snake_direction db 4Dh
+	RIGHT equ 4Dh
+	LEFT equ 4Bh
+	UP equ 48h
+	DOWN equ 50h
+	snake_direction db RIGHT
+	
 	; food
 	food_location dw 40d*2d + 12d*screen_width*2d
 	food_color equ 4Dh
@@ -93,7 +99,7 @@ INIT_GAME proc near
 	call INIT_SCREEN
 	call INIT_SNAKE_BODY
 	mov byte ptr [player_score],0h
-	mov byte ptr [snake_direction],4Dh
+	mov byte ptr [snake_direction],RIGHT
 	mov word ptr [snake_previous_last_cell],screen_width*screen_hight*2d
 	mov word ptr [food_location],40d*2d + 12d*screen_width*2d
 	mov byte ptr [EXIT],0h
@@ -304,16 +310,16 @@ MOVE_SNAKE proc near
 	mov ax,snake_body[0h]
 	call SHR_ARRAY
 	; RIGHT
-	cmp byte ptr [snake_direction],4Dh
+	cmp byte ptr [snake_direction],RIGHT
 	jz MOVE_RIGHT
 	; LEFT
-	cmp byte ptr [snake_direction],4Bh
+	cmp byte ptr [snake_direction],LEFT
 	jz MOVE_LEFT
 	; UP
-	cmp byte ptr [snake_direction],48h
+	cmp byte ptr [snake_direction],UP
 	jz MOVE_UP
 	; DOWN
-	cmp byte ptr [snake_direction],50h
+	cmp byte ptr [snake_direction],DOWN
 	jz MOVE_DOWN
 
 	
@@ -324,10 +330,10 @@ MOVE_SNAKE proc near
 		sub ax, 2d
 		jmp MOVE_TO_DIRECTION
 	MOVE_UP:
-		sub ax, 160d
+		sub ax, screen_width*2d
 		jmp MOVE_TO_DIRECTION
 	MOVE_DOWN:
-		add ax, 160d
+		add ax, screen_width*2d
 		jmp MOVE_TO_DIRECTION
 		
 MOVE_TO_DIRECTION:
