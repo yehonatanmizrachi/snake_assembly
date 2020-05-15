@@ -13,7 +13,7 @@
 	; snake
 	; len X 2
 	snake_len dw ?
-	snake_body dw 0FFh + 1h dup(?)
+	snake_body dw player_win_score + 3h dup(?)
 	; for repairing the backgroud(the snake will never start at 25d*80d*2d)
 	snake_previous_last_cell dw ?
 	; snake movement
