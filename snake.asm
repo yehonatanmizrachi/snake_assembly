@@ -8,24 +8,24 @@
 	screen_hight equ 25d
 	; player
 	player_score_label_offset equ (screen_hight*screen_width-1d)*2d
-	player_score db 0h
+	player_score db ?
 	player_win_score equ 0FFh
 	; snake
 	; len X 2
 	snake_len dw ?
 	snake_body dw 0FFh + 1h dup(?)
 	; for repairing the backgroud(the snake will never start at 25d*80d*2d)
-	snake_previous_last_cell dw screen_width*screen_hight*2d
+	snake_previous_last_cell dw ?
 	; snake movement
 	; 4D/4B/48/50 - r/l/u/d. defulte - right
 	RIGHT equ 4Dh
 	LEFT equ 4Bh
 	UP equ 48h
 	DOWN equ 50h
-	snake_direction db RIGHT
+	snake_direction db ?
 	
 	; food
-	food_location dw 40d*2d + 12d*screen_width*2d
+	food_location dw ?
 	food_color equ 4Dh
 	food_icon equ 01h
 	food_bounders equ 2d*screen_width*2d
@@ -96,14 +96,15 @@ MAIN:
 	int 21h
 	
 INIT_GAME proc near
-	call INIT_SCREEN
-	call INIT_SNAKE_BODY
 	mov byte ptr [player_score],0h
 	mov byte ptr [snake_direction],RIGHT
 	mov word ptr [snake_previous_last_cell],screen_width*screen_hight*2d
-	mov word ptr [food_location],40d*2d + 12d*screen_width*2d
+	mov word ptr [food_location],8d*screen_width*2d + 10d*2d
 	mov byte ptr [EXIT],0h
 	mov byte ptr [START_AGAIN],0h
+	
+	call INIT_SCREEN
+	call INIT_SNAKE_BODY
 
 	ret
 INIT_GAME endp	
