@@ -35,7 +35,8 @@
 	; 39h = bios code for the space key
 	START_AGAIN_KEY equ 39h
 	; messeges
-	msg_game_over db 'GAME OVER!:( YOU ANYWAY SHOULD GET BACK TO WORK ON EX5Q3;) PRESS ANY KEY TO EXIT                        PRESS SPACE TO START AGAIN' ,0Ah , 0Dh , '$'
+	msg_game_over db 'GAME OVER!:( YOU ANYWAY SHOULD GET BACK TO WORK ON EX5Q3;) PRESS ANY KEY TO EXIT' ,0Ah , 0Dh , '$'
+	msg_game_over2 db '                        PRESS SPACE TO START AGAIN',0Ah , 0Dh , '$'
 	msg_game_win db 'YOU HAVE WON THE GAME BADASS!!:)  PRESS ANY KEY TO EXIT' ,0Ah , 0Dh , '$'
 	msg_start_game db 'WELCOME TO SNAKEV1! PREES THE ESC KEY TO EXIT THE GAME. enjoy:)',0Ah , 0Dh , '$'
 	
@@ -272,11 +273,38 @@ WIN_GAME endp
 GAME_OVER proc near 
 	push dx
 	push ax
-	
+	push bx
 	; print game over msg
 	mov dx, offset msg_game_over
 	mov ah, 9h
 	int 21h
+	; add delay
+	; delay cx:dx micro sec (10^-6)
+	mov cx,00008h		
+	mov dx,0FFFFh
+	int 15h
+	int 15h
+	; clear key buffer
+	mov ah,0Ch
+	int 21h	
+
+
+	; add blink to the msg2 line
+	mov bx,0h
+	GAME_OVER_BLINK_LABEL:
+		mov ax,0h
+		mov ah,backgroud_color
+		or ah,10000000b
+		mov es:[bx + 3*screen_width*2d], ax
+		; next iteration
+		add bx,2h
+		cmp bx, screen_width*2d
+		jnz GAME_OVER_BLINK_LABEL
+	; print game over msg2
+	mov dx, offset msg_game_over2
+	mov ah, 9h
+	int 21h
+	
 	; get key delay
 	mov ax,0h
 	mov ah,0h
@@ -295,7 +323,8 @@ END_GAME_OVER:
 	int 21h	
 	
 	mov byte ptr [EXIT],1h
-
+	
+	pop bx
 	pop ax
 	pop dx
 	ret
