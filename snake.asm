@@ -1,3 +1,6 @@
+; Yehonatan Mizrachi
+; 8086 masm DOSBox
+; Micro processors and assembly language - bar ilan university
 .model small
 .stack 200h
 .data
