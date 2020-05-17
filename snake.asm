@@ -34,9 +34,10 @@
 	START_AGAIN db 0h
 	; 39h = bios code for the space key
 	START_AGAIN_KEY equ 39h
+	END_GAME_KEY equ 01h
 	; messeges
-	msg_game_over db 'GAME OVER!:( YOU ANYWAY SHOULD GET BACK TO WORK ON EX5Q3;) PRESS ANY KEY TO EXIT' ,0Ah , 0Dh , '$'
-	msg_game_over2 db '                        PRESS SPACE TO START AGAIN',0Ah , 0Dh , '$'
+	msg_game_over db 'GAME OVER!:( YOU ANYWAY SHOULD GET BACK TO WORK ON EX5Q3;) PRESS Esc TO EXIT      ' ,0Ah , 0Dh , '$'
+	msg_game_over2 db '                          PRESS SPACE TO START AGAIN',0Ah , 0Dh , '$'
 	msg_game_win db 'YOU HAVE WON THE GAME BADASS!!:)  PRESS ANY KEY TO EXIT' ,0Ah , 0Dh , '$'
 	msg_start_game db 'WELCOME TO SNAKEV1! PREES THE ESC KEY TO EXIT THE GAME. enjoy:)',0Ah , 0Dh , '$'
 	
@@ -278,17 +279,6 @@ GAME_OVER proc near
 	mov dx, offset msg_game_over
 	mov ah, 9h
 	int 21h
-	; add delay
-	; delay cx:dx micro sec (10^-6)
-	mov cx,00008h		
-	mov dx,0FFFFh
-	int 15h
-	int 15h
-	; clear key buffer
-	mov ah,0Ch
-	int 21h	
-
-
 	; add blink to the msg2 line
 	mov bx,0h
 	GAME_OVER_BLINK_LABEL:
@@ -304,20 +294,28 @@ GAME_OVER proc near
 	mov dx, offset msg_game_over2
 	mov ah, 9h
 	int 21h
-	
-	; get key delay
+GAME_OVER_GET_OTHER_KEY:
+	; clear key buffer
+	mov ah,0Ch
+	int 21h	
+	; get key
 	mov ax,0h
 	mov ah,0h
 	int 16h	
 	
+	cmp ah, END_GAME_KEY
+	jz END_GAME_OVER
+	
 	cmp ah, START_AGAIN_KEY
-	jnz END_GAME_OVER
+	jz GAME_OVER_START_AGAIN
 	
-	mov [START_AGAIN],1h
-	
+	jmp GAME_OVER_GET_OTHER_KEY
 
-END_GAME_OVER:	
-	
+
+GAME_OVER_START_AGAIN:
+	mov [START_AGAIN],1h
+
+END_GAME_OVER:		
 	; clear key buffer
 	mov ah,0Ch
 	int 21h	
@@ -547,7 +545,7 @@ GET_DIRECTION_BY_KEY proc near
 	; zero flag is on if there was no event
 	jz END_GET_DIRECTION_BY_KEY
 	; esc key
-	cmp ah,01h
+	cmp ah,END_GAME_KEY
 	jz GET_DIRECTION_BY_KEY_EXIT_GAME_IS_ON
 	
 	;if |new direction - old direction| == 3d or 5d it's a valid move(the snake cant turn backward)
