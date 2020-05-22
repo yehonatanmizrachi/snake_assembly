@@ -42,7 +42,7 @@
 	msg_game_over db 'GAME OVER!:( YOU ANYWAY SHOULD GET BACK TO WORK ON EX5Q3;) PRESS Esc TO EXIT      ' ,0Ah , 0Dh , '$'
 	msg_game_over2 db '                          PRESS SPACE TO START AGAIN',0Ah , 0Dh , '$'
 	msg_game_win db 'YOU HAVE WON THE GAME BADASS!!:)  PRESS ANY KEY TO EXIT' ,0Ah , 0Dh , '$'
-	msg_start_game db 'WELCOME TO SNAKEV1! PREES THE ESC KEY TO EXIT THE GAME. enjoy:)',0Ah , 0Dh , '$'
+	msg_start_game db 'WELCOME TO SNAKEV2! PREES THE Esc KEY TO EXIT THE GAME. enjoy:)',0Ah , 0Dh , '$'
 	
 	
 	;Ex2q3 write register content
