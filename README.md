@@ -13,5 +13,5 @@ Instructions:
 
 4.To win, gain FFh points(make the score register to overflow).
 
-5.If you lose, press space to start over or any other key to quit.
+5.If you lose, press space to start over or Esc to quit.
 
